@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cache
+  namespace: ericson
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: cache
+      project: ericson
+  template:
+    metadata:
+      labels:
+        service: cache
+        project: ericson
+    spec:
+      containers:
+        - name: cache
+          image: eduardogama/dashcache
+          ports:
+            - containerPort: 30001
+          env:
+          - name: CACHE_SIZE
+            value: "40"
+
