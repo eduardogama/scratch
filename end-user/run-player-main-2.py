@@ -77,7 +77,7 @@ class TestTemplate(unittest.TestCase):
                 "init('{}')".format(self.user)
             )
 
-            print("Sending QoE Player from BBB Video Streaming ...")            
+            print("Sending QoE Player from BBB Video Streaming ...")    
             self.driver.execute_script(
                 "sendQoE(player, '{}')".format(self.user)
             )
@@ -88,6 +88,6 @@ class TestTemplate(unittest.TestCase):
             print(e, file=sys.stderr)
 
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestTemplate)
     unittest.TextTestRunner(verbosity=2).run(suite)

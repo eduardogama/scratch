@@ -74,9 +74,10 @@ def topology(args):
     e5.start([])
     e6.start([])
     
+    sta1.cmd('google-chrome --no-sandbox http://143.106.73.50:30002/samples/ericsson/vod-1.html')
     # sta1.cmd('python end-user/run-player-main.py')
-    makeTerm(sta1, cmd="python end-user/run-player-main.py")
-    makeTerm(sta2, cmd="python end-user/run-player-main.py")
+    # makeTerm(sta1, cmd="python end-user/run-player-main.py")
+    # makeTerm(sta2, cmd="python end-user/run-player-main.py")
     # makeTerm(sta2, cmd="bash -c 'python end-user/run-player-main.py'")
 
     info("*** Running CLI\n")
