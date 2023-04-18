@@ -29,16 +29,19 @@ def topology(args):
     c1 = net.addController('c1')
 
     info("*** Configuring Propagation Model\n")
-    net.setPropagationModel(model="logDistance", exp=2.8)
+    net.setPropagationModel(model="logDistance", exp=3.5)
 
     info("*** Configuring nodes\n")
     net.configureNodes()
 
     if '-p' not in args:
-        net.plotGraph(max_x=100, max_y=100)
+        net.plotGraph(max_x=400, max_y=400)
 
     info("*** Starting network\n")
     net.build()
+    
+    net.addNAT().configDefault()
+    
     c1.start()
     ap1.start([c1])
 
