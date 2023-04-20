@@ -19,71 +19,25 @@ from mn_wifi.wmediumdConnector import interference
 from mininet.term import makeTerm
 
 
-def nextTime(rateParameter, RAND_MAX=0):
-    return -math.log(1.0 - random.random()/(RAND_MAX + 1)) / rateParameter
-
-
-def incoming(stas):
-
-    for sta in stas:
-        val = nextTime(1/5.0)
-        sleep(val)
-        print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
-        makeTerm(
-            sta, cmd = 'google-chrome --no-first-run '\
-                '--disable-gesture-requirement-for-media-playback '\
-                '--no-sandbox '\
-                '--disable-gpu '\
-                '--disable-plugins '\
-                '--incognito '\
-                '--new-window '\
-                'http://143.106.73.50:30002/samples/ericsson/vod-1.html?userid={}'
-                .format(sta.name)
-        )
-    
-
-def monitoring(stas):
-    # Monitor the connectivity of the station
-    prev_ap = []
-
-    while True:
-        for sta in stas:
-            connected_ap = sta.wintfs[0].ssid
-            print('Connected to:', connected_ap)
-
-            # Check if the station connects to a different access point
-            if connected_ap != prev_ap:
-                print('[', sta.wintfs[0].ip, '] Access point changed from',
-                      prev_ap, 'to', connected_ap, '! ')
-                prev_ap = connected_ap
-
-            # Wait for a few seconds before checking the connectivity again
-            sleep(2)
-
-
 def topology(args):
     "Create a network."
-    net = Mininet_wifi()
+    net = Mininet_wifi(controller=Controller, link=wmediumd,
+                       wmediumd_mode=interference)
 
-    stations = []
-    for i in range(1, 6):
-        sta = net.addStation('sta'+ str(i), mac='00:00:00:00:00:0'+ str(i),
-                            position='400,1050,0')
-
-        stations.append(sta)
-
-    for i in range(1, 10):
-        sta = net.addStation('sta1'+ str(i), mac='00:00:00:00:00:1'+ str(i),
-                            position='1600,450,0')
-
-        stations.append(sta)
+    sta1 = net.addStation('sta1', mac='00:00:00:00:00:01',
+                          position='400,1050,0')
+    sta2 = net.addStation('sta2', mac='00:00:00:00:00:02',
+                          position='1600,450,0')
+    # sta3 = net.addStation('sta3', mac='00:00:00:00:00:03', min_x=100, max_x=700, min_y=50, max_y=450, min_v=20, max_v=30)
+    # sta4 = net.addStation('sta4', mac='00:00:00:00:00:04', min_x=100, max_x=700, min_y=50, max_y=450, min_v=20, max_v=30)
+    # sta5 = net.addStation('sta5', mac='00:00:00:00:00:05', min_x=100, max_x=700, min_y=50, max_y=450, min_v=20, max_v=30)
 
     info("*** Creating nodes\n")
 
     kwargs = {'mode': 'g', 'failMode': 'standalone'}
 
     e1 = net.addAccessPoint('e1', mac='00:00:00:11:00:01', channel='1',
-                            position='400,1050,0', ssid='ssid-ap1', range='10', **kwargs)
+                            position='400,1060,0', ssid='ssid-ap1' )
     e2 = net.addAccessPoint('e2', mac='00:00:00:11:00:02', channel='1',
                             position='1000,1050,0', ssid='ssid-ap2', **kwargs)
     e3 = net.addAccessPoint('e3', mac='00:00:00:11:00:03', channel='1',
@@ -100,6 +54,7 @@ def topology(args):
     h1 = net.addHost('h1', mac="00:00:00:00:00:05")
 
     info("*** Configuring Propagation Model\n")
+    net.setPropagationModel(model="logDistance", exp=2.8)
 
     info("*** Configuring nodes\n")
     net.configureNodes()
@@ -109,11 +64,9 @@ def topology(args):
     net.addLink(e3, e4)
     net.addLink(e4, e5)
     net.addLink(e5, e6)
+    net.addLink(e1, sta1)
 
     net.addLink(e1, h1)
-
-    net.setMobilityModel(time=0, model='RandomDirection',
-                         max_x=2000, max_y=1200, seed=20)
 
     net.plotGraph(max_x=2000, max_y=1600)
 
@@ -129,10 +82,6 @@ def topology(args):
     e5.start([])
     e6.start([])
 
-    stations = np.array(stations)
-
-    threading.Thread(target=monitoring, args=(stations,)).start()
-    threading.Thread(target=incoming, args=(stations,)).start()
 
     CLI(net)
 
