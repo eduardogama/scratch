@@ -25,9 +25,9 @@ def topology(args):
                        wmediumd_mode=interference)
 
     sta1 = net.addStation('sta1', mac='00:00:00:00:00:01',
-                          position='400,1050,0')
+                          position='400,1060,0')
     sta2 = net.addStation('sta2', mac='00:00:00:00:00:02',
-                          position='1600,450,0')
+                          position='1600,430,0')
     # sta3 = net.addStation('sta3', mac='00:00:00:00:00:03', min_x=100, max_x=700, min_y=50, max_y=450, min_v=20, max_v=30)
     # sta4 = net.addStation('sta4', mac='00:00:00:00:00:04', min_x=100, max_x=700, min_y=50, max_y=450, min_v=20, max_v=30)
     # sta5 = net.addStation('sta5', mac='00:00:00:00:00:05', min_x=100, max_x=700, min_y=50, max_y=450, min_v=20, max_v=30)
@@ -37,7 +37,7 @@ def topology(args):
     kwargs = {'mode': 'g', 'failMode': 'standalone'}
 
     e1 = net.addAccessPoint('e1', mac='00:00:00:11:00:01', channel='1',
-                            position='400,1060,0', ssid='ssid-ap1' )
+                            position='400,1050,0', ssid='ssid-ap1' )
     e2 = net.addAccessPoint('e2', mac='00:00:00:11:00:02', channel='1',
                             position='1000,1050,0', ssid='ssid-ap2', **kwargs)
     e3 = net.addAccessPoint('e3', mac='00:00:00:11:00:03', channel='1',
