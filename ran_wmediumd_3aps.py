@@ -1,8 +1,5 @@
 #!/usr/bin/python
 
-# autor: Ramon dos Reis Fontes
-# book: Wireless Network Emulation with Mininet-WiFi
-# github: https://github.com/ramonfontes/mn-wifi-book-en
 
 import threading
 
@@ -23,7 +20,7 @@ class Simulation():
 
     def __init__(self, nusers) -> None:
         self.net = Mininet_wifi(controller=Controller, link=wmediumd,
-                                wmediumd_mode=interference)
+                                wmediumd_mode=interference, allAutoAssociation = False)
 
         info("*** Creating nodes\n")
         self.stations = self.createStations(nusers)
