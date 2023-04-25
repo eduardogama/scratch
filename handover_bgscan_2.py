@@ -7,7 +7,7 @@ from mn_wifi.cli import CLI
 from mn_wifi.net import Mininet_wifi
 from mn_wifi.link import wmediumd
 from mn_wifi.wmediumdConnector import interference
-
+from mininet.term import makeTerm
 
 def topology(args):
     "Create a network."

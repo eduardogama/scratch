@@ -45,7 +45,7 @@ def monitoring(stas):
             # Check if the station connects to a different access point
             if connected_ap != prev_ap:
                 print('[', sta.wintfs[0].ip, '] Access point changed from',
-                      prev_ap, 'to', connected_ap, '! ')
+                      prev_ap, 'to', connected_ap, '!')
                 prev_ap = connected_ap
 
             # Wait for a few seconds before checking the connectivity again
@@ -61,9 +61,6 @@ def topology(args):
                           min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=10, max_v=20)
     sta2 = net.addStation('sta2', mac='00:00:00:00:00:02',
                           min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=3, max_v=5)
-    # sta3 = net.addStation('sta3', mac='00:00:00:00:00:03', min_x=100, max_x=700, min_y=50, max_y=450, min_v=20, max_v=30)
-    # sta4 = net.addStation('sta4', mac='00:00:00:00:00:04', min_x=100, max_x=700, min_y=50, max_y=450, min_v=20, max_v=30)
-    # sta5 = net.addStation('sta5', mac='00:00:00:00:00:05', min_x=100, max_x=700, min_y=50, max_y=450, min_v=20, max_v=30)
 
     info("*** Creating nodes\n")
 
@@ -117,19 +114,10 @@ def topology(args):
     e5.start([])
     e6.start([])
 
-    # sta1.cmd('google-chrome --no-sandbox http://143.106.73.50:30002/samples/ericsson/vod-1.html')
-    # sta1.cmd('python end-user/run-player-main.py')
-    # makeTerm(sta1, cmd="python end-user/run-player-main-2.py")
-
-    # makeTerm(sta1, cmd='google-chrome --no-first-run --disable-gesture-requirement-for-media-playback --no-sandbox http://143.106.73.50:30002/samples/ericsson/vod-1.html')
-
-    # makeTerm(sta2, cmd="python end-user/run-player-main.py")
-    # makeTerm(sta2, cmd="bash -c 'python end-user/run-player-main.py'")
-
     stations = np.array([sta1, sta2])
 
-    threading.Thread(target=monitoring, args=(stations,)).start()
-    threading.Thread(target=incoming, args=(stations,)).start()
+    # threading.Thread(target=monitoring, args=(stations,)).start()
+    # threading.Thread(target=incoming, args=(stations,)).start()
 
     CLI(net)
 

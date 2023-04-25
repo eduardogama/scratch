@@ -86,7 +86,7 @@ class TestTemplate(unittest.TestCase):
             WebDriverWait(self.driver, 634).until(WaitLoad())
             
         except Exception as e:
-            print(e, file=sys.stderr)
+            print(e)
 
 
 if __name__ == '__main__':    
