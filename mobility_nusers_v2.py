@@ -41,7 +41,7 @@ def incoming(stas):
             '--disable-gpu '
             '--incognito '
             '--new-window '
-            'http://192.168.100.13:3000/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
+            'http://100.112.108.237:3000/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
 
 
 def monitoring(stas):
@@ -58,8 +58,6 @@ def monitoring(stas):
                         {"userName": sta.name, "bsName": connected_ap, "ip": sta.wintfs[0].ip})
                 )
 
-                # requests.post("http://143.106.73.50:30700/colect/handover",
-                #               json={"userName": sta.name, "bsName": connected_ap, "ip": sta.wintfs[0].ip})
                 os.system(
                     "curl -X POST 143.106.73.50:30700/collect/handover -H 'Content-Type: application/json' -d $(jo userName={} bsName={} ip={})"
                     .format(sta.name, connected_ap, sta.wintfs[0].ip))
@@ -73,16 +71,12 @@ def topology(args):
     "Create a network."
     net = Mininet_wifi(controller=Controller)
 
+
+    n = 20
     stations = []
-    for i in range(1, 6):
-        sta = net.addStation('sta' + str(i), mac='00:00:00:00:00:0' + str(i),
+    for i in range(1, n):
+        sta = net.addStation('sta%d' % (i), mac='00:00:00:00:00:%02d' % (i),
                              min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=10, max_v=20)
-
-        stations.append(sta)
-
-    for i in range(1, 6):
-        sta = net.addStation('sta1' + str(i), mac='00:00:00:00:00:1' + str(i),
-                             min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=3, max_v=5)
 
         stations.append(sta)
 

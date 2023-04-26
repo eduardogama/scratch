@@ -41,7 +41,7 @@ def incoming(stas):
             '--disable-gpu '
             '--incognito '
             '--new-window '
-            'http://192.168.100.13:3000/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
+            'http://192.168.0.22:3000/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
 
 
 def monitoring(stas):
@@ -71,7 +71,8 @@ def monitoring(stas):
 
 def topology(args):
     "Create a network."
-    net = Mininet_wifi(controller=Controller)
+    net = Mininet_wifi(controller=Controller, link=wmediumd,
+                       wmediumd_mode=interference)
 
     stations = []
     for i in range(1, 6):
