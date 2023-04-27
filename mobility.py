@@ -10,6 +10,7 @@ from mn_wifi.net import Mininet_wifi
 
 
 def topology(args):
+
     "Create a network."
     net = Mininet_wifi()
 
@@ -33,21 +34,22 @@ def topology(args):
     if '-p' not in args:
         net.plotGraph(max_x=80, max_y=80)
 
+  
     if '-c' in args:
-        sta1.coord = ['40.0,30.0,0.0', '31.0,10.0,0.0', '31.0,30.0,0.0']
-        sta2.coord = ['40.0,40.0,0.0', '55.0,31.0,0.0', '55.0,81.0,0.0']
+        sta1.coord = ['40.0,30.0,0.0', '31.0,10.0,0.0', '31.0,40.0,0.0', '31.0,30.0,0.0']
+        sta2.coord = ['40.0,30.0,0.0', '31.0,10.0,0.0', '31.0,30.0,0.0']
 
-    net.startMobility(time=0, repetitions=10)
+    net.startMobility(time=0)
 
     p1, p2, p3, p4 = {}, {}, {}, {}
     if '-c' not in args:
         p1 = {'position': '40.0,30.0,0.0'}
-        p2 = {'position': '40.0,40.0,0.0'}
-        p3 = {'position': '31.0,10.0,0.0'}
-        p4 = {'position': '50.0,40.0,0.0'}
-
+        p2 = {'position': '40.0,30.0,0.0'}
+        p3 = {'position': '31.0,30.0,0.0'}
+        p4 = {'position': '31.0,30.0,0.0'}
+        
     net.mobility(sta1, 'start', time=1, **p1)
-    net.mobility(sta2, 'start', time=2, **p2)
+    net.mobility(sta2, 'start', time=1, **p2)
     net.mobility(sta1, 'stop', time=12, **p3)
     net.mobility(sta2, 'stop', time=12, **p4)
     net.stopMobility(time=22)

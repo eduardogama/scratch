@@ -45,7 +45,6 @@ def topology(args):
     net.mobility(sta1, 'start', time=1, position='10,20,0')
     net.mobility(sta1, 'stop', time=20, position='100,20,0')
 
-
     info("Starting Network\n")
     net.build()
 

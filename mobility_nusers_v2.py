@@ -3,85 +3,89 @@
 'Setting the position of nodes and providing mobility'
 
 import sys
-import math
 import random
-import threading
 
-from time import sleep
 import numpy as np
+
 
 from mininet.node import Controller
 from mininet.log import setLogLevel, info
 from mn_wifi.cli import CLI
 from mn_wifi.net import Mininet_wifi
-from mn_wifi.link import wmediumd
-from mn_wifi.wmediumdConnector import interference
-from mininet.term import makeTerm
-import os
-
-import json
 
 
-def nextTime(rateParameter, RAND_MAX=0):
-    return -math.log(1.0 - random.random()/(RAND_MAX + 1)) / rateParameter
+graph = [
+    [1, 3],
+    [0, 2, 4],
+    [1, 5],
+    [0, 4],
+    [1, 3, 5],
+    [2, 4]
+]
+
+aps_pos = [
+    [400, 1050, 0],
+    [1000, 1050, 0],
+    [1600, 1050, 0],
+    [400, 450, 0],
+    [1000, 450, 0],
+    [1600, 450, 0],
+]
 
 
-def incoming(stas):
+class User(object):
+    def __init__(self, name, ap, coord) -> None:
+        self.name = name
+        self.ap = ap
 
-    for sta in stas:
-        val = nextTime(1/5.0)
-        sleep(val)
-        print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
-        makeTerm(
-            sta, cmd='google-chrome '
-            '--disable-application-cache '
-            '--media-cache-size=1 '
-            '--disk-cache-dir=/dev/null '
-            '--no-sandbox '
-            '--disable-gpu '
-            '--incognito '
-            '--new-window '
-            'http://100.112.108.237:3000/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
+        self.cur_ap = [0]
+        self.pos_x = coord[0]
+        self.pos_y = coord[1]
 
+        self.movingDirection = [f"{coord[0]}, {coord[1]}, 0"]
 
-def monitoring(stas):
-    # Monitor the connectivity of the station
-    prev_ap = np.array([None for i in enumerate(stas)])
+    def addMovement(self, x, y):
+        self.movingDirection.append(f"{x}, {y}, 0")
 
-    while True:
-        for i, sta in enumerate(stas):
-            connected_ap = sta.wintfs[0].ssid
-
-            if connected_ap != prev_ap[i]:
-                print(
-                    json.dumps(
-                        {"userName": sta.name, "bsName": connected_ap, "ip": sta.wintfs[0].ip})
-                )
-
-                os.system(
-                    "curl -X POST 143.106.73.50:30700/collect/handover -H 'Content-Type: application/json' -d $(jo userName={} bsName={} ip={})"
-                    .format(sta.name, connected_ap, sta.wintfs[0].ip))
-
-                prev_ap[i] = connected_ap
-
-            sleep(2)
+    def addAP(self, ap):
+        self.cur_ap.append(ap)
 
 
 def topology(args):
+
+    niter = 10
+    nusers = 1
+    users = []
+    coords = {"sta%d" % i: (0, []) for i in range(1, nusers+1)}
+
+    # Starting point forn Access Point 1
+    for i, c in enumerate(coords):
+        coord = [random.randint(aps_pos[0][0]-150, aps_pos[0][0]+150),
+                 random.randint(aps_pos[0][1]-150, aps_pos[0][1]+150), 0]
+
+        user = User(
+            name="sta%d" % i,
+            ap=0,
+            coord=coord
+        )
+
+        users.append(user)
+
+    for i in range(10):
+        for u in users:
+            next_hop = random.choice(graph[u.cur_ap[-1]])
+            x = random.randint(
+                aps_pos[next_hop][0]-150, aps_pos[next_hop][0]+150)
+            y = random.randint(
+                aps_pos[next_hop][1]-150, aps_pos[next_hop][1]+150)
+
+            u.addAP(next_hop)
+            u.addMovement(x, y)
+
     "Create a network."
     net = Mininet_wifi(controller=Controller)
 
-
-    n = 20
-    stations = []
-    for i in range(1, n):
-        sta = net.addStation('sta%d' % (i), mac='00:00:00:00:00:%02d' % (i),
-                             min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=10, max_v=20)
-
-        stations.append(sta)
-
     info("*** Creating nodes\n")
-
     kwargs = {'mode': 'g', 'failMode': 'standalone'}
 
     e1 = net.addAccessPoint('BS-1', mac='00:00:00:11:00:01', channel='1',
@@ -97,28 +101,34 @@ def topology(args):
     e6 = net.addAccessPoint('BS-6', mac='00:00:00:11:00:06', channel='1',
                             position='1600,450,0', ssid='BS-6', **kwargs)
 
-    # c1 = net.addController('c1')
+    for i in range(1, nusers+1):
+        net.addStation('sta%d' % (i), mac='00:00:00:00:00:%02d' % (i),speed=10)
 
-    h1 = net.addHost('h1', mac="00:00:00:00:00:05")
-
-    info("*** Configuring Propagation Model\n")
-    net.setPropagationModel(model="logDistance", exp=2.8)
+    info("*** Configuring propagation model\n")
+    net.setPropagationModel(model="logDistance", exp=3)
 
     info("*** Configuring nodes\n")
     net.configureNodes()
 
+    info("*** Associating and Creating links\n")
     net.addLink(e1, e2)
     net.addLink(e2, e3)
     net.addLink(e3, e4)
     net.addLink(e4, e5)
     net.addLink(e5, e6)
 
-    net.addLink(e1, h1)
+    if '-p' not in args:
+        net.plotGraph(max_x=2000, max_y=1600)
 
-    net.setMobilityModel(time=0, model='RandomDirection',
-                         max_x=2000, max_y=1200, seed=20)
+    for user, sta in zip(users, net.stations):
+        sta.coord = user.movingDirection
 
-    net.plotGraph(max_x=2000, max_y=1600)
+    net.startMobility(time=0)
+
+    for user, sta in zip(users, net.stations):
+        net.mobility(sta, 'start', time=1, position=user.movingDirection[0])
+        net.mobility(sta, 'stop', time=100, position=user.movingDirection[-1])
+    net.stopMobility(time=101)
 
     info("*** Starting network\n")
     net.build()
@@ -132,11 +142,7 @@ def topology(args):
     e5.start([])
     e6.start([])
 
-    stations = np.array(stations)
-
-    threading.Thread(target=monitoring, args=(stations,)).start()
-    threading.Thread(target=incoming, args=(stations,)).start()
-
+    info("*** Running CLI\n")
     CLI(net)
 
     info("*** Stopping network\n")
