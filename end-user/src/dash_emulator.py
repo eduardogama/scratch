@@ -71,6 +71,9 @@ if __name__ == '__main__':
         exit(-1)
 
     logging.basicConfig(level=logging.INFO)
+    
+
+    print(args)
 
     player = build_dash_player()
 

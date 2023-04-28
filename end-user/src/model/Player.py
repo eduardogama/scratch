@@ -1,9 +1,17 @@
 import asyncio
 import time
 
+from . import MPD, BufferManager, MPDProvider
 from abc import ABC, abstractmethod
-from . import State, MPD
+from enum import Enum
 
+
+
+class State(Enum):
+    IDLE = 0
+    BUFFERING = 1
+    READY = 2
+    END = 3
 
 class Player(ABC):
     @property
