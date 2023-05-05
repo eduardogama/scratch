@@ -3,11 +3,7 @@
 'Setting the position of nodes and providing mobility'
 
 import sys
-import math
-import random
-import threading
 
-from time import sleep
 import numpy as np
 
 from mininet.node import Controller
@@ -19,39 +15,6 @@ from mn_wifi.wmediumdConnector import interference
 from mininet.term import makeTerm
 
 
-def nextTime(rateParameter, RAND_MAX=0):
-    return -math.log(1.0 - random.random()/(RAND_MAX + 1)) / rateParameter
-
-
-def incoming(stas):
-
-    for sta in stas:
-        val = nextTime(1/5.0)
-        sleep(val)
-        print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
-        makeTerm(
-            sta, cmd='google-chrome --no-first-run --disable-gesture-requirement-for-media-playback --no-sandbox http://143.106.73.50:30002/samples/ericsson/vod-1.html')
-    
-
-def monitoring(stas):
-    # Monitor the connectivity of the station
-    prev_ap = []
-
-    while True:
-        for sta in stas:
-            connected_ap = sta.wintfs[0].ssid
-            print('Connected to:', connected_ap)
-
-            # Check if the station connects to a different access point
-            if connected_ap != prev_ap:
-                print('[', sta.wintfs[0].ip, '] Access point changed from',
-                      prev_ap, 'to', connected_ap, '! ')
-                prev_ap = connected_ap
-
-            # Wait for a few seconds before checking the connectivity again
-            sleep(2)
-
-
 def topology(args):
     "Create a network."
     net = Mininet_wifi(controller=Controller, link=wmediumd,
@@ -61,13 +24,13 @@ def topology(args):
                           min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=10, max_v=20)
     sta2 = net.addStation('sta2', mac='00:00:00:00:00:02',
                           min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=3, max_v=5)
-    sta3 = net.addStation('sta3', mac='00:00:00:00:00:03', 
+    sta3 = net.addStation('sta3', mac='00:00:00:00:00:03',
                           min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=10, max_v=20)
-    sta4 = net.addStation('sta4', mac='00:00:00:00:00:04', 
+    sta4 = net.addStation('sta4', mac='00:00:00:00:00:04',
                           min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=3, max_v=5)
-    sta5 = net.addStation('sta5', mac='00:00:00:00:00:05', 
+    sta5 = net.addStation('sta5', mac='00:00:00:00:00:05',
                           min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=20, max_v=30)
-    sta6 = net.addStation('sta6', mac='00:00:00:00:00:06', 
+    sta6 = net.addStation('sta6', mac='00:00:00:00:00:06',
                           min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=3, max_v=5)
 
     info("*** Creating nodes\n")
@@ -122,20 +85,8 @@ def topology(args):
     e5.start([])
     e6.start([])
 
-    # sta1.cmd('google-chrome --no-sandbox http://143.106.73.50:30002/samples/ericsson/vod-1.html')
-    # sta1.cmd('python end-user/run-player-main.py')
-    # makeTerm(sta1, cmd="python end-user/run-player-main-2.py")
-
-    # makeTerm(sta1, cmd='google-chrome --no-first-run --disable-gesture-requirement-for-media-playback --no-sandbox http://143.106.73.50:30002/samples/ericsson/vod-1.html')
-
-    # makeTerm(sta2, cmd="python end-user/run-player-main.py")
-    # makeTerm(sta2, cmd="bash -c 'python end-user/run-player-main.py'")
-
     # stations = np.array([sta1, sta2])
     stations = np.array([sta1, sta2, sta3, sta4, sta5, sta6])
-
-    threading.Thread(target=monitoring, args=(stations,)).start()
-    threading.Thread(target=incoming, args=(stations,)).start()
 
     CLI(net)
 
