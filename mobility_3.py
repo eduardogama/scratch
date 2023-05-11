@@ -20,19 +20,7 @@ def topology(args):
     net = Mininet_wifi(controller=Controller, link=wmediumd,
                        wmediumd_mode=interference)
 
-    sta1 = net.addStation('sta1', mac='00:00:00:00:00:01',
-                          min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=10, max_v=20)
-    sta2 = net.addStation('sta2', mac='00:00:00:00:00:02',
-                          min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=3, max_v=5)
-    sta3 = net.addStation('sta3', mac='00:00:00:00:00:03',
-                          min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=10, max_v=20)
-    sta4 = net.addStation('sta4', mac='00:00:00:00:00:04',
-                          min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=3, max_v=5)
-    sta5 = net.addStation('sta5', mac='00:00:00:00:00:05',
-                          min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=20, max_v=30)
-    sta6 = net.addStation('sta6', mac='00:00:00:00:00:06',
-                          min_x=100, max_x=2000, min_y=100, max_y=1400, min_v=3, max_v=5)
-
+    sta1 = net.addStation('sta1', mac='00:00:00:00:00:01')
     info("*** Creating nodes\n")
 
     kwargs = {'mode': 'g', 'failMode': 'standalone'}
@@ -68,10 +56,25 @@ def topology(args):
 
     net.addLink(e1, h1)
 
-    net.setMobilityModel(time=0, model='RandomDirection',
-                         max_x=2000, max_y=1200, seed=20)
 
-    net.plotGraph(max_x=2000, max_y=1600)
+    net.startMobility(time=0)
+
+    p1, p2, p3, p4 = {}, {}, {}, {}
+    if '-c' not in args:
+        p1 = {'position': '40.0,30.0,0.0'}
+        p2 = {'position': '40.0,30.0,0.0'}
+        p3 = {'position': '31.0,30.0,0.0'}
+        p4 = {'position': '31.0,40.0,0.0'}
+        
+    net.mobility(sta1, 'start', time=1, **p1)
+    net.mobility(sta1, 'stop', time=12, **p3)
+    net.mobility(sta1, 'start', time=13, **p3)
+    net.mobility(sta1, 'stop', time=21, **p4)
+    net.stopMobility(time=22)
+
+
+    if '-p' not in args:
+        net.plotGraph(max_x=80, max_y=80)
 
     info("*** Starting network\n")
     net.build()
@@ -86,7 +89,7 @@ def topology(args):
     e6.start([])
 
     # stations = np.array([sta1, sta2])
-    stations = np.array([sta1, sta2, sta3, sta4, sta5, sta6])
+    stations = np.array([sta1])
 
     CLI(net)
 

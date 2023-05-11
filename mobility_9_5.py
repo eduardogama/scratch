@@ -19,33 +19,6 @@ from mn_wifi.cli import CLI
 from mn_wifi.node import UserAP
 from mn_wifi.net import Mininet_wifi
 
-# graph = [
-#     [1, 3],
-#     [0, 2, 4],
-#     [1, 5],
-#     [0, 4],
-#     [1, 3, 5],
-#     [2, 4]
-# ]
-graph = [
-    [0, 1, 3],
-    [0, 1, 2, 4],
-    [1, 2, 5],
-    [0, 3, 4],
-    [1, 3, 4, 5],
-    [2, 4, 5]
-]
-
-aps_pos = [
-    [400, 1050, 0],
-    [1000, 1050, 0],
-    [1600, 1050, 0],
-    [400, 450, 0],
-    [1000, 450, 0],
-    [1600, 450, 0],
-]
-
-
 
 def nextTime(rateParameter, RAND_MAX=0):
     return -math.log(1.0 - random.random()/(RAND_MAX + 1)) / rateParameter
@@ -111,55 +84,20 @@ class User(object):
 def topology(args):
 
     nusers = 6
-    users = []
-    coords = {"sta%d" % i: (0, []) for i in range(1, nusers+1)}
 
-    # Starting point forn Access Point 1
-    for i, c in enumerate(coords):
-        coord = [random.randint(aps_pos[0][0]-150, aps_pos[0][0]+150),
-                 random.randint(aps_pos[0][1]-150, aps_pos[0][1]+150), 0]
-
-        user = User(
-            name="sta%d" % i,
-            ap=0,
-            coord=coord
-        )
-
-        users.append(user)
-
-
-    points = []
-    ngroups = len(users)//2
-    print(ngroups)
-
-    for i in range(10):
-        
-        next_hop = random.choice(graph[users[0].cur_ap[-1]])
-
-        for i in range(ngroups):
-
-            x = random.randint(
-                aps_pos[next_hop][0]-150, aps_pos[next_hop][0]+150)
-            y = random.randint(
-                aps_pos[next_hop][1]-150, aps_pos[next_hop][1]+150)
-
-            users[i].addAP(next_hop)
-            users[i].addMovement(x, y)
-
-        points.append(next_hop)
-
-    for p in points:
-        ap = p
-
-        for i in range(ngroups, len(users)):
-            x = random.randint(
-                aps_pos[ap][0]-150, aps_pos[ap][0]+150)
-            y = random.randint(
-                aps_pos[ap][1]-150, aps_pos[ap][1]+150)
-
-            users[i].addAP(ap)
-            users[i].addMovement(x, y)
-
+    coords = [
+        "400,1000,0",
+        "1000,1000,0",
+        "1600,1000,0",
+        "1600,400,0",
+        "1000,400,0",
+        "400,400,0",
+        "400,1000,0",
+        "1000,1000,0",
+        "1600,1000,0",
+        "1600,400,0",
+        "1000,400,0",
+    ]
 
     "Create a network."
     net = Mininet_wifi(controller=Controller)
@@ -199,12 +137,12 @@ def topology(args):
     if '-p' not in args:
         net.plotGraph(max_x=2000, max_y=1600)
 
-    for user, sta in zip(users, net.stations):
-        sta.coord = user.movingDirection
+    for sta in net.stations:
+        sta.coord = coords
 
     net.startMobility(time=0)
 
-    for user, sta in zip(users, net.stations):
+    for sta in net.stations:
         net.mobility(sta, 'start', time=1)
         net.mobility(sta, 'stop', time=100)
     net.stopMobility(time=101)
