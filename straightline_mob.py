@@ -69,10 +69,9 @@ def monitoring(stas):
 
 def topology(args):
     "Create a network."
-    net = Mininet_wifi(controller=Controller, link=wmediumd,
-                       wmediumd_mode=interference)
+    net = Mininet_wifi()
 
-    nusers = 6
+    nusers = 1
 
     for i in range(1, nusers+1):
         net.addStation('sta%d' % (i), mac='00:00:00:00:00:%02d' % (i))
@@ -83,31 +82,28 @@ def topology(args):
 
     e1 = net.addAccessPoint('e1', mac='00:00:00:11:00:01', channel='1',
                             position='400,1050,0', ssid='BS-1', **kwargs)
-    e2 = net.addAccessPoint('e2', mac='00:00:00:11:00:02', channel='1',
+    e2 = net.addAccessPoint('e2', mac='00:00:00:11:00:02', channel='3',
                             position='1000,1050,0', ssid='BS-2', **kwargs)
     e3 = net.addAccessPoint('e3', mac='00:00:00:11:00:03', channel='1',
                             position='1600,1050,0', ssid='BS-3', **kwargs)
-    e4 = net.addAccessPoint('e4', mac='00:00:00:11:00:04', channel='1',
+    e4 = net.addAccessPoint('e4', mac='00:00:00:11:00:04', channel='3',
                             position='2200,1050,0', ssid='BS-4', **kwargs)
     e5 = net.addAccessPoint('e5', mac='00:00:00:11:00:05', channel='1',
                             position='2800,1050,0', ssid='BS-5', **kwargs)
-    e6 = net.addAccessPoint('e6', mac='00:00:00:11:00:06', channel='1',
+    e6 = net.addAccessPoint('e6', mac='00:00:00:11:00:06', channel='3',
                             position='3400,1050,0', ssid='BS-6', **kwargs)
     e7 = net.addAccessPoint('e7', mac='00:00:00:11:00:07', channel='1',
                             position='4000,1050,0', ssid='BS-7', **kwargs)
-    e8 = net.addAccessPoint('e8', mac='00:00:00:11:00:08', channel='1',
+    e8 = net.addAccessPoint('e8', mac='00:00:00:11:00:08', channel='3',
                             position='4600,1050,0', ssid='BS-8', **kwargs)
-    e9 = net.addAccessPoint('e9', mac='00:00:00:11:00:09', channel='1',
+    e9 = net.addAccessPoint('e9', mac='00:00:00:11:00:09', channel='3',
                             position='5200,1050,0', ssid='BS-9', **kwargs)
     e10 = net.addAccessPoint('e10', mac='00:00:00:11:00:10', channel='1',
                             position='5800,1050,0', ssid='BS-10', **kwargs)
 
-    # c1 = net.addController('c1')
-
-    h1 = net.addHost('h1', mac="00:00:00:00:00:05")
 
     info("*** Configuring Propagation Model\n")
-    net.setPropagationModel(model="logDistance", sL=3, exp=2.8)
+    net.setPropagationModel(model="logDistance", exp=2.8)
 
     info("*** Configuring nodes\n")
     net.configureNodes()
@@ -122,21 +118,21 @@ def topology(args):
     net.addLink(e8, e9)
     net.addLink(e9, e10)
 
-    net.addLink(e1, h1)
+    p1, p2 = {}, {}
+    if '-c' not in args:
+        p1 = {'position': '100.0,1050.0,0.0'}
+        p2 = {'position': '6000.0,1050.0,0.0'}
+    
+
+    for sta in net.stations:
+        sta.coord = ['100.0,1050.0,0.0', '6000.0,1050.0,0.0']
 
 
     net.startMobility(time=0)
 
-    p1, p2, p3, p4 = {}, {}, {}, {}
-    if '-c' not in args:
-        p1 = {'position': '80.0,1050.0,0.0'}
-        p2 = {'position': '6000.0,1050.0,0.0'}
-    
-
-    
     for sta in net.stations:
         net.mobility(sta, 'start', time=1, **p1)
-        net.mobility(sta, 'stop', time=100, **p2)
+        net.mobility(sta, 'stop', time=200, **p2)
 
     net.stopMobility(time=601)
 
@@ -161,9 +157,9 @@ def topology(args):
     e10.start([])
 
     # stations = np.array([sta1, sta2])
-    stations = np.array(net.stations)
-    threading.Thread(target=monitoring, args=(stations,)).start()
-    threading.Thread(target=incoming, args=(stations,)).start()
+    # stations = np.array(net.stations)
+    # threading.Thread(target=monitoring, args=(stations,)).start()
+    # threading.Thread(target=incoming, args=(stations,)).start()
 
 
     CLI(net)

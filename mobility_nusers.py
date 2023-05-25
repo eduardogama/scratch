@@ -41,7 +41,7 @@ def incoming(stas):
             '--disable-gpu '
             '--incognito '
             '--new-window '
-            'http://100.112.108.237:3000/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
+            'http://143.106.73.50:30002/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
 
 
 def monitoring(stas):
