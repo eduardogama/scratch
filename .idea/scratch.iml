@@ -5,6 +5,7 @@
     <orderEntry type="jdk" jdkName="Python 3.10 (scratch)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="mininet-wifi" />
+    <orderEntry type="module" module-name="cs144_lab5" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />

@@ -21,28 +21,25 @@ from mn_wifi.wmediumdConnector import interference
 from mininet.term import makeTerm
 
 
-
-
 def nextTime(rateParameter, RAND_MAX=0):
-    return -math.log(1.0 - random.random()/(RAND_MAX + 1)) / rateParameter
+    return -math.log(1.0 - random.random() / (RAND_MAX + 1)) / rateParameter
 
 
 def incoming(stas):
-
     for sta in stas:
-        val = nextTime(1/5.0)
+        val = nextTime(1 / 5.0)
         sleep(val)
         print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
         makeTerm(
             sta, cmd='google-chrome '
-            '--disable-application-cache '
-            '--media-cache-size=1 '
-            '--disk-cache-dir=/dev/null '
-            '--no-sandbox '
-            '--disable-gpu '
-            '--incognito '
-            '--new-window '
-            'http://143.106.73.50:30002/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
+                     '--disable-application-cache '
+                     '--media-cache-size=1 '
+                     '--disk-cache-dir=/dev/null '
+                     '--no-sandbox '
+                     '--disable-gpu '
+                     '--incognito '
+                     '--new-window '
+                     'http://143.106.73.50:30002/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
 
 
 def monitoring(stas):
@@ -67,13 +64,14 @@ def monitoring(stas):
 
             sleep(2)
 
+
 def topology(args):
     "Create a network."
     net = Mininet_wifi()
 
     nusers = 1
 
-    for i in range(1, nusers+1):
+    for i in range(1, nusers + 1):
         net.addStation('sta%d' % (i), mac='00:00:00:00:00:%02d' % (i))
 
     info("*** Creating nodes\n")
@@ -99,8 +97,7 @@ def topology(args):
     e9 = net.addAccessPoint('e9', mac='00:00:00:11:00:09', channel='3',
                             position='5200,1050,0', ssid='BS-9', **kwargs)
     e10 = net.addAccessPoint('e10', mac='00:00:00:11:00:10', channel='1',
-                            position='5800,1050,0', ssid='BS-10', **kwargs)
-
+                             position='5800,1050,0', ssid='BS-10', **kwargs)
 
     info("*** Configuring Propagation Model\n")
     net.setPropagationModel(model="logDistance", exp=2.8)
@@ -122,11 +119,9 @@ def topology(args):
     if '-c' not in args:
         p1 = {'position': '100.0,1050.0,0.0'}
         p2 = {'position': '6000.0,1050.0,0.0'}
-    
 
     for sta in net.stations:
         sta.coord = ['100.0,1050.0,0.0', '6000.0,1050.0,0.0']
-
 
     net.startMobility(time=0)
 
@@ -135,7 +130,6 @@ def topology(args):
         net.mobility(sta, 'stop', time=200, **p2)
 
     net.stopMobility(time=601)
-
 
     if '-p' not in args:
         net.plotGraph(max_x=6500, max_y=6500)
@@ -160,7 +154,6 @@ def topology(args):
     # stations = np.array(net.stations)
     # threading.Thread(target=monitoring, args=(stations,)).start()
     # threading.Thread(target=incoming, args=(stations,)).start()
-
 
     CLI(net)
 
