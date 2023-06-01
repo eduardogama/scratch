@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'Setting the position of nodes and providing mobility'
+"""Setting the position of nodes and providing mobility"""
 
 import sys
 import os
@@ -21,13 +21,13 @@ from mn_wifi.wmediumdConnector import interference
 from mininet.term import makeTerm
 
 
-def nextTime(rateParameter, RAND_MAX=0):
+def next_time(rateParameter: float, RAND_MAX: int = 0):
     return -math.log(1.0 - random.random() / (RAND_MAX + 1)) / rateParameter
 
 
-def incoming(stas):
+def incoming(stas: object):
     for sta in stas:
-        val = nextTime(1 / 5.0)
+        val = next_time(1 / 5.0)
         sleep(val)
         print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
         makeTerm(
@@ -57,7 +57,8 @@ def monitoring(stas):
                 )
 
                 os.system(
-                    "curl -X POST 143.106.73.50:30700/collect/handover -H 'Content-Type: application/json' -d $(jo userName={} bsName={} ip={})"
+                    "curl -X POST 143.106.73.50:30700/collect/handover -H 'Content-Type: application/json' -d $(jo "
+                    "userName={} bsName={} ip={})"
                     .format(sta.name, connected_ap, sta.wintfs[0].ip))
 
                 prev_ap[i] = connected_ap
@@ -66,13 +67,13 @@ def monitoring(stas):
 
 
 def topology(args):
-    "Create a network."
+    """Create a network."""
     net = Mininet_wifi()
 
-    nusers = 1
+    nusers = 3
 
     for i in range(1, nusers + 1):
-        net.addStation('sta%d' % (i), mac='00:00:00:00:00:%02d' % (i))
+        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i)
 
     info("*** Creating nodes\n")
 
@@ -80,30 +81,30 @@ def topology(args):
 
     e1 = net.addAccessPoint('e1', mac='00:00:00:11:00:01', channel='1',
                             position='400,1050,0', ssid='BS-1', **kwargs)
-    e2 = net.addAccessPoint('e2', mac='00:00:00:11:00:02', channel='3',
+    e2 = net.addAccessPoint('e2', mac='00:00:00:11:00:02', channel='1',
                             position='1000,1050,0', ssid='BS-2', **kwargs)
     e3 = net.addAccessPoint('e3', mac='00:00:00:11:00:03', channel='1',
                             position='1600,1050,0', ssid='BS-3', **kwargs)
-    e4 = net.addAccessPoint('e4', mac='00:00:00:11:00:04', channel='3',
+    e4 = net.addAccessPoint('e4', mac='00:00:00:11:00:04', channel='1',
                             position='2200,1050,0', ssid='BS-4', **kwargs)
     e5 = net.addAccessPoint('e5', mac='00:00:00:11:00:05', channel='1',
                             position='2800,1050,0', ssid='BS-5', **kwargs)
-    e6 = net.addAccessPoint('e6', mac='00:00:00:11:00:06', channel='3',
+    e6 = net.addAccessPoint('e6', mac='00:00:00:11:00:06', channel='1',
                             position='3400,1050,0', ssid='BS-6', **kwargs)
     e7 = net.addAccessPoint('e7', mac='00:00:00:11:00:07', channel='1',
                             position='4000,1050,0', ssid='BS-7', **kwargs)
-    e8 = net.addAccessPoint('e8', mac='00:00:00:11:00:08', channel='3',
+    e8 = net.addAccessPoint('e8', mac='00:00:00:11:00:08', channel='1',
                             position='4600,1050,0', ssid='BS-8', **kwargs)
-    e9 = net.addAccessPoint('e9', mac='00:00:00:11:00:09', channel='3',
+    e9 = net.addAccessPoint('e9', mac='00:00:00:11:00:09', channel='1',
                             position='5200,1050,0', ssid='BS-9', **kwargs)
     e10 = net.addAccessPoint('e10', mac='00:00:00:11:00:10', channel='1',
                              position='5800,1050,0', ssid='BS-10', **kwargs)
 
     info("*** Configuring Propagation Model\n")
-    net.setPropagationModel(model="logDistance", exp=2.8)
+    net.setPropagationModel(model="logDistance", sL=3, exp=2.8)
 
     info("*** Configuring nodes\n")
-    net.configureNodes()
+    net.configureWifiNodes()
 
     net.addLink(e1, e2)
     net.addLink(e2, e3)
@@ -136,7 +137,6 @@ def topology(args):
 
     info("*** Starting network\n")
     net.build()
-
     net.addNAT().configDefault()
 
     e1.start([])

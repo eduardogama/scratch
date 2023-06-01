@@ -63,9 +63,16 @@ def topology(args):
                             position='1600,450,0', ssid='ssid-ap3', **kwargs)
     e4 = net.addAccessPoint('e4', mac='00:00:00:11:00:04', channel='1',
                             position='2200,450,0', ssid='ssid-ap4', **kwargs)
+    e5 = net.addAccessPoint('e5', mac='00:00:00:11:00:05', channel='1',
+                            position='2800,450,0', ssid='ssid-ap5', **kwargs)
+    e6 = net.addAccessPoint('e6', mac='00:00:00:11:00:06', channel='1',
+                            position='3400,450,0', ssid='ssid-ap6', **kwargs)
+    e7 = net.addAccessPoint('e7', mac='00:00:00:11:00:07', channel='1',
+                            position='4000,450,0', ssid='ssid-ap7', **kwargs)
 
     info("*** Configuring Propagation Model\n")
-    net.setPropagationModel(model="logDistance", exp=2.8)
+    # net.setPropagationModel(model="logDistance", exp=4.5)
+    net.setPropagationModel(model="logDistance", sL=2, exp=2.8)
 
     info("*** Configuring nodes\n")
     net.configureWifiNodes()
@@ -73,14 +80,17 @@ def topology(args):
     net.addLink(e1, e2)
     net.addLink(e2, e3)
     net.addLink(e3, e4)
+    net.addLink(e4, e5)
+    net.addLink(e5, e6)
+    net.addLink(e6, e7)
 
     p1, p2 = {}, {}
     if '-c' not in args:
         p1 = {'position': '100.0,450.0,0.0'}
-        p2 = {'position': '2500.0,450.0,0.0'}
+        p2 = {'position': '3800.0,450.0,0.0'}
 
     for sta in net.stations:
-        sta.coord = ['100.0,450.0,0.0', '2500.0,450.0,0.0']
+        sta.coord = ['100.0,450.0,0.0', '3800.0,450.0,0.0']
 
     net.startMobility(time=0)
 
@@ -90,7 +100,7 @@ def topology(args):
 
     net.stopMobility(time=601)
 
-    net.plotGraph(max_x=3000, max_y=1200)
+    net.plotGraph(max_x=6500, max_y=6500)
 
     info("*** Starting network\n")
     net.build()
@@ -100,6 +110,9 @@ def topology(args):
     e2.start([])
     e3.start([])
     e4.start([])
+    e5.start([])
+    e6.start([])
+    e7.start([])
 
     makeTerm(sta1, cmd="bash -c 'ping 8.8.8.8'")
     # makeTerm(sta1, cmd='google-chrome '
