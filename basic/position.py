@@ -21,6 +21,22 @@ from mn_wifi.wmediumdConnector import interference
 from mininet.term import makeTerm
 
 
+
+### Run this code in orchestrator server ###
+#import requests
+#requests.post('http://localhost:30600/bsPlacement',
+#               json={
+#                     'BS-1': 'http://143.106.73.17:30001',
+#                     'BS-2': 'http://143.106.73.17:30001',
+#                     'BS-3': 'http://143.106.73.23:30001',
+#                     'BS-4': 'http://143.106.73.23:30001',
+#                     'BS-5': 'http://143.106.73.19:30001',
+#                     'BS-7': 'http://143.106.73.23:30001',
+#                     'BS-8': 'http://143.106.73.19:30001',
+#                     'Cloud-1': 'http://143.106.73.50:30002',
+#               })
+
+
 def next_time(rateParameter: float, RAND_MAX: int = 0):
     return -math.log(1.0 - random.random() / (RAND_MAX + 1)) / rateParameter
 
@@ -68,23 +84,11 @@ def monitoring(stas):
 
 
 def topology(args):
-    # import requests
-    # requests.post('http://localhost:30600/bsPlacement',
-    #               json={
-    #                     'BS-1': 'http://143.106.73.17:30001',
-    #                     'BS-2': 'http://143.106.73.17:30001',
-    #                     'BS-3': 'http://143.106.73.23:30001',
-    #                     'BS-4': 'http://143.106.73.23:30001',
-    #                     'BS-5': 'http://143.106.73.19:30001',
-    #                     'BS-7': 'http://143.106.73.23:30001',
-    #                     'BS-8': 'http://143.106.73.19:30001',
-    #                     'Cloud-1': 'http://143.106.73.50:30002',
-    #               })
 
     """Create a network."""
     net = Mininet_wifi()
 
-    nusers = 5
+    nusers = 1
 
     for i in range(1, nusers + 1):
         net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i)
@@ -131,26 +135,12 @@ def topology(args):
     net.addLink(e9, e10)
 
     p1, p2 = {}, {}
-    if '-c' not in args:
-        p1 = {'position': '100.0,1050.0,0.0'}
-        p2 = {'position': '6000.0,1050.0,0.0'}
+    p1 = {'position': '100.0,1050.0,0.0'}
+    p2 = {'position': '6000.0,1050.0,0.0'}
 
     for sta in net.stations:
         sta.coord = ['100.0,1050.0,0.0', '6000.0,1050.0,0.0']
 
-    net.startMobility(time=0)
-
-    nstations = len(net.stations)
-
-    for i in range(nstations):
-        net.mobility(net.stations[i], 'start', time=1, **p1)
-        net.mobility(net.stations[i], 'stop', time=600, **p2)
-
-#    for i in range(nstations, len(net.stations)):
-#        net.mobility(net.stations[i], 'start', time=31, **p1)
-#        net.mobility(net.stations[i], 'stop', time=630, **p2)
-
-    net.stopMobility(time=631)
 
     if '-p' not in args:
         net.plotGraph(max_x=6500, max_y=6500)
@@ -173,7 +163,7 @@ def topology(args):
     # stations = np.array([sta1, sta2])
     stations = np.array(net.stations)
     threading.Thread(target=monitoring, args=(stations,)).start()
-    threading.Thread(target=incoming, args=(stations,)).start()
+#    threading.Thread(target=incoming, args=(stations,)).start()
 
     CLI(net)
 

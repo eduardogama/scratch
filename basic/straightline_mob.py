@@ -2,15 +2,21 @@
 
 """Setting the position of nodes and providing mobility"""
 
+import datetime
 import sys
 import os
 import math
 import json
 import random
 import threading
+import asyncio
+import logging
+import argparse
+import re
 
 import numpy as np
 
+from typing import Dict, Union
 from time import sleep
 from mininet.node import Controller
 from mininet.log import setLogLevel, info
@@ -21,11 +27,46 @@ from mn_wifi.wmediumdConnector import interference
 from mininet.term import makeTerm
 
 
+sys.path.append("/home/eduardo/workspace/dash-emulator")
+
+from dash_emulator.player_factory import build_dash_player
+
+
+
+
+log = logging.getLogger(__name__)
+
+PLAYER_TARGET = "target"
+
+
+
 def next_time(rateParameter: float, RAND_MAX: int = 0):
     return -math.log(1.0 - random.random() / (RAND_MAX + 1)) / rateParameter
 
+def DashPlayer(stas: object):
 
-def incoming(stas: object):
+    sleep(5)
+    for sta in stas:
+        val = next_time(1 / 5.0)
+        sleep(val)
+        print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
+        
+#        sta.cmd('python dash-emulator.py http://143.106.73.17:30001/akamai/bbb_30fps/bbb_30fps.mpd')
+        makeTerm(sta, cmd='python dash-emulator.py http://143.106.73.17:30001/akamai/bbb_30fps/bbb_30fps.mpd')
+
+
+
+def SeleniumPlayer(stas: object):
+    sleep(5)
+    for sta in stas:
+        val = next_time(1 / 5.0)
+        sleep(val)
+        print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
+        
+        makeTerm(sta, cmd='python selenium-start.py {}'.format(sta.name))
+
+
+def ChromePlayer(stas: object):
     sleep(1)
     for sta in stas:
         val = next_time(1 / 5.0)
@@ -43,6 +84,10 @@ def incoming(stas: object):
                      'http://143.106.73.50:30002/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
 
 
+def incoming(stas: object):
+    SeleniumPlayer(stas)
+
+
 def monitoring(stas):
     # Monitor the connectivity of the station
     prev_ap = np.array([None for i in enumerate(stas)])
@@ -52,7 +97,9 @@ def monitoring(stas):
             connected_ap = sta.wintfs[0].ssid
 
             if connected_ap != prev_ap[i]:
-                print(
+                now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                
+                print(now, 
                     json.dumps(
                         {"userName": sta.name, "bsName": connected_ap, "ip": sta.wintfs[0].ip})
                 )
@@ -65,7 +112,7 @@ def monitoring(stas):
                 prev_ap[i] = connected_ap
 
             sleep(2)
-
+            
 
 def topology(args):
     # import requests
@@ -84,7 +131,7 @@ def topology(args):
     """Create a network."""
     net = Mininet_wifi()
 
-    nusers = 5
+    nusers = 10
 
     for i in range(1, nusers + 1):
         net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i)
@@ -140,15 +187,15 @@ def topology(args):
 
     net.startMobility(time=0)
 
-    nstations = len(net.stations)
+    nstations = len(net.stations)//2
 
     for i in range(nstations):
-        net.mobility(net.stations[i], 'start', time=1, **p1)
+        net.mobility(net.stations[i], 'start', time=5, **p1)
         net.mobility(net.stations[i], 'stop', time=600, **p2)
 
-#    for i in range(nstations, len(net.stations)):
-#        net.mobility(net.stations[i], 'start', time=31, **p1)
-#        net.mobility(net.stations[i], 'stop', time=630, **p2)
+    for i in range(nstations, len(net.stations)):
+        net.mobility(net.stations[i], 'start', time=5, **p1)
+        net.mobility(net.stations[i], 'stop', time=630, **p2)
 
     net.stopMobility(time=631)
 
