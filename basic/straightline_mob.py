@@ -131,7 +131,7 @@ def topology(args):
     """Create a network."""
     net = Mininet_wifi()
 
-    nusers = 10
+    nusers = 20
 
     for i in range(1, nusers + 1):
         net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i)
@@ -177,27 +177,40 @@ def topology(args):
     net.addLink(e8, e9)
     net.addLink(e9, e10)
 
+
+
+    nstations = len(net.stations)//2
+    
     p1, p2 = {}, {}
     if '-c' not in args:
         p1 = {'position': '100.0,1050.0,0.0'}
         p2 = {'position': '6000.0,1050.0,0.0'}
 
-    for sta in net.stations:
-        sta.coord = ['100.0,1050.0,0.0', '6000.0,1050.0,0.0']
+    for i in range(nstations):
+        net.stations[i].coord = ['100.0,1050.0,0.0', '6000.0,1050.0,0.0']
+
+    p3, p4 = {}, {}
+    if '-c' not in args:
+        p3 = {'position': '1400.0,1050.0,0.0'}
+        p4 = {'position': '6000.0,1050.0,0.0'}
+
+    for i in range(nstations, len(net.stations)):
+        net.stations[i].coord = ['1400.0,1050.0,0.0', '6000.0,1050.0,0.0']
+
+
 
     net.startMobility(time=0)
-
-    nstations = len(net.stations)//2
 
     for i in range(nstations):
         net.mobility(net.stations[i], 'start', time=5, **p1)
         net.mobility(net.stations[i], 'stop', time=600, **p2)
 
     for i in range(nstations, len(net.stations)):
-        net.mobility(net.stations[i], 'start', time=5, **p1)
-        net.mobility(net.stations[i], 'stop', time=630, **p2)
+        net.mobility(net.stations[i], 'start', time=5, **p3)
+        net.mobility(net.stations[i], 'stop', time=600, **p4)
 
     net.stopMobility(time=631)
+
 
     if '-p' not in args:
         net.plotGraph(max_x=6500, max_y=6500)
