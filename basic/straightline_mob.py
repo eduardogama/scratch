@@ -131,7 +131,7 @@ def topology(args):
     """Create a network."""
     net = Mininet_wifi()
 
-    nusers = 20
+    nusers = 2
 
     for i in range(1, nusers + 1):
         net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i)

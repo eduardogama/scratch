@@ -41,7 +41,29 @@ def next_time(rateParameter: float, RAND_MAX: int = 0):
     return -math.log(1.0 - random.random() / (RAND_MAX + 1)) / rateParameter
 
 
-def incoming(stas: object):
+def DashPlayer(stas: object):
+
+    sleep(5)
+    for sta in stas:
+        val = next_time(1 / 5.0)
+        sleep(val)
+        print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
+        
+#        sta.cmd('python dash-emulator.py http://143.106.73.17:30001/akamai/bbb_30fps/bbb_30fps.mpd')
+        makeTerm(sta, cmd='python dash-emulator.py http://143.106.73.17:30001/akamai/bbb_30fps/bbb_30fps.mpd')
+
+
+def SeleniumPlayer(stas: object):
+    sleep(5)
+    for sta in stas:
+        val = next_time(1 / 5.0)
+        sleep(val)
+        print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
+        
+        makeTerm(sta, cmd='python selenium-start.py {}'.format(sta.name))
+
+
+def ChromePlayer(stas: object):
     sleep(5)
     for sta in stas:
         val = next_time(1 / 5.0)
@@ -57,6 +79,10 @@ def incoming(stas: object):
                      '--incognito '
                      '--new-window '
                      'http://143.106.73.50:30002/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
+
+
+def incoming(stas: object):
+    ChromePlayer(stas)
 
 
 def monitoring(stas):
@@ -91,10 +117,16 @@ def topology(args):
     """Create a network."""
     net = Mininet_wifi()
 
-    nusers = 5
+    nusers = 10
 
-    for i in range(1, nusers + 1):
+
+    nstations = nusers//2
+    
+    for i in range(1, nstations + 1):
         net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position='401.0,1050.0,0.0')
+
+    for i in range(nstations+1, nusers + 1):
+        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position='1001.0,1050.0,0.0')
 
     info("*** Creating nodes\n")
 
