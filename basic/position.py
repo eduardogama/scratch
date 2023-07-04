@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 """Setting the position of nodes and providing mobility"""
+from pyvirtualdisplay import Display
 
 import sys
 import os
@@ -21,6 +22,9 @@ from mn_wifi.wmediumdConnector import interference
 from mininet.term import makeTerm
 
 
+
+display = Display(visible=0, size=(1024, 768))
+display.start()
 
 ### Run this code in orchestrator server ###
 #import requests
@@ -75,14 +79,13 @@ def ChromePlayer(stas: object):
                      '--media-cache-size=1 '
                      '--disk-cache-dir=/dev/null '
                      '--no-sandbox '
-                     '--disable-gpu '
                      '--incognito '
                      '--new-window '
                      'http://143.106.73.50:30002/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
 
 
 def incoming(stas: object):
-    ChromePlayer(stas)
+    SeleniumPlayer(stas)
 
 
 def monitoring(stas):
@@ -125,8 +128,8 @@ def topology(args):
     for i in range(1, nstations + 1):
         net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position='401.0,1050.0,0.0')
 
-    for i in range(nstations+1, nusers + 1):
-        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position='1001.0,1050.0,0.0')
+#    for i in range(nstations+1, nusers + 1):
+#        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position='1001.0,1050.0,0.0')
 
     info("*** Creating nodes\n")
 
@@ -148,8 +151,8 @@ def topology(args):
     net.addLink(e1, e2)
     net.addLink(e2, e3)
 
-    if '-p' not in args:
-        net.plotGraph(max_x=2000, max_y=2000)
+#    if '-p' not in args:
+#        net.plotGraph(max_x=2000, max_y=2000)
 
     info("*** Starting network\n")
     net.build()
@@ -161,15 +164,21 @@ def topology(args):
 
     # stations = np.array([sta1, sta2])
     stations = np.array(net.stations)
-    threading.Thread(target=monitoring, args=(stations,)).start()
+#    threading.Thread(target=monitoring, args=(stations,)).start()
     threading.Thread(target=incoming, args=(stations,)).start()
 
-    CLI(net)
+#    CLI(net)
+    monitoring(stations)
+
 
     info("*** Stopping network\n")
     net.stop()
 
 
+
 if __name__ == '__main__':
     setLogLevel('info')
     topology(sys.argv)
+
+
+display.stop()

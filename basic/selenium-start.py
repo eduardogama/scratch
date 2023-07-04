@@ -8,6 +8,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 import sys
 
+#display = Display(visible=0, size=(1024, 768))
+#display.start()
+
 user = sys.argv[1] if len(sys.argv) > 1 else "anonymous"
 
 class WaitLoad:
@@ -36,8 +39,6 @@ options.add_argument('--disable-gpu')
 options.add_argument('--incognito')
 options.add_argument('--new-window')
 
-display = Display(visible=0, size=(1024, 768))
-display.start()
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
@@ -47,5 +48,5 @@ WebDriverWait(driver, 634).until(WaitLoad())
             
 
 driver.quit()
-display.stop()
+#display.stop()
 
