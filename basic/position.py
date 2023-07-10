@@ -82,7 +82,7 @@ def ChromePlayer(stas: object):
 
 
 def incoming(stas: object):
-    ChromePlayer(stas)
+    SeleniumPlayer(stas)
 
 
 def monitoring(stas):
@@ -148,8 +148,8 @@ def topology(args):
     net.addLink(e1, e2)
     net.addLink(e2, e3)
 
-    if '-p' not in args:
-        net.plotGraph(max_x=2000, max_y=2000)
+#    if '-p' not in args:
+#        net.plotGraph(max_x=2000, max_y=2000)
 
     info("*** Starting network\n")
     net.build()
@@ -161,10 +161,12 @@ def topology(args):
 
     # stations = np.array([sta1, sta2])
     stations = np.array(net.stations)
-    threading.Thread(target=monitoring, args=(stations,)).start()
     threading.Thread(target=incoming, args=(stations,)).start()
-
-    CLI(net)
+    
+    
+#    threading.Thread(target=monitoring, args=(stations,)).start()
+    monitoring(stations)
+#    CLI(net)
 
     info("*** Stopping network\n")
     net.stop()
