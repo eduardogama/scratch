@@ -1,4 +1,4 @@
-from pyvirtualdisplay import Display
+#from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -11,7 +11,8 @@ import sys
 #display = Display(visible=0, size=(1024, 768))
 #display.start()
 
-user = sys.argv[1] if len(sys.argv) > 1 else "anonymous"
+abrStrategy = sys.argv[1] if len(sys.argv) > 1 else "abrDynamic"
+user = sys.argv[2] if len(sys.argv) > 2 else "anonymous"
 
 class WaitLoad:
     def __call__(self, driver):
@@ -31,21 +32,25 @@ class WaitLoad:
 options = Options()
 options.add_argument('--headless')
 options.add_argument('--no-sandbox')
-options.add_argument('--disable-dev-shm-usage')
-options.add_argument('--disable-application-cache')
-options.add_argument('--media-cache-size=1')
+options.add_argument('--no-first-run')
+#options.add_argument('--disable-dev-shm-usage')
+options.add_argument('--no-user-gesture-required')
+#options.add_argument('--disable-application-cache')
+#options.add_argument('--media-cache-size=1')
 options.add_argument('--disk-cache-dir=/dev/null')
-options.add_argument('--disable-gpu')
-options.add_argument('--incognito')
-options.add_argument('--new-window')
+#options.add_argument('--disable-gpu')
+#options.add_argument('--incognito')
+#options.add_argument('--new-window')
 
+#display = Display(visible=0, size=(1024, 768))
+#display.start()
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
-driver.get("http://143.106.73.50:30002/samples/ericsson/vod-client.html?userid={}".format(user))
+driver.get("http://143.106.73.50:30002/samples/ericsson/vod-client.html?abrStrategy={}&userid={}".format(abrStrategy, user))
 
 WebDriverWait(driver, 634).until(WaitLoad())
-            
+
 
 driver.quit()
 #display.stop()

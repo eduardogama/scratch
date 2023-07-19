@@ -23,7 +23,8 @@ from mininet.term import makeTerm
 
 
 
-display = Display(visible=0, size=(1024, 768))
+#display = Display(visible=0, size=(1024, 768))
+display = Display()
 display.start()
 
 ### Run this code in orchestrator server ###
@@ -57,42 +58,44 @@ def DashPlayer(stas: object):
         makeTerm(sta, cmd='python dash-emulator.py http://143.106.73.17:30001/akamai/bbb_30fps/bbb_30fps.mpd')
 
 
-def SeleniumPlayer(stas: object):
-    sleep(5)
+def SeleniumPlayer(stas: object, abrStrategy: str):
+    sleep(2)
     for sta in stas:
         val = next_time(1 / 5.0)
         sleep(val)
         print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
         
-        makeTerm(sta, cmd='python selenium-start.py {}'.format(sta.name))
+        makeTerm(sta, cmd='python selenium-start.py {} {}'.format(abrStrategy, sta.name))
 
 
-def ChromePlayer(stas: object):
-    sleep(5)
+def ChromePlayer(stas: object, abrStrategy: str):
+    sleep(2)
     for sta in stas:
         val = next_time(1 / 5.0)
         sleep(val)
         print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
         makeTerm(
             sta, cmd='google-chrome '
-                     '--disable-application-cache '
-                     '--media-cache-size=1 '
+                     '--headless '
+#                     '--disable-application-cache '
+#                     '--media-cache-size=1 '
                      '--disk-cache-dir=/dev/null '
                      '--no-sandbox '
                      '--incognito '
                      '--new-window '
-                     'http://143.106.73.50:30002/samples/ericsson/vod-client.html?userid={}'.format(sta.name))
+                     'http://143.106.73.50:30002/samples/ericsson/vod-client.html?userid={}&abrStrategy={}'.format(sta.name, abrStrategy))
 
 
-def incoming(stas: object):
-    SeleniumPlayer(stas)
+def incoming(stas: object, abrStrategy: str):
+    SeleniumPlayer(stas, abrStrategy)
 
 
 def monitoring(stas):
     # Monitor the connectivity of the station
     prev_ap = np.array([None for i in enumerate(stas)])
 
-    while True:
+    
+    for k in range(330):
         for i, sta in enumerate(stas):
             connected_ap = sta.wintfs[0].ssid
 
@@ -111,8 +114,9 @@ def monitoring(stas):
                     .format(sta.name, connected_ap, sta.wintfs[0].ip))
 
                 prev_ap[i] = connected_ap
-
-            sleep(2)
+            
+        print(2*k, end=' ', flush=True)
+        sleep(2)
 
 
 def topology(args):
@@ -120,16 +124,18 @@ def topology(args):
     """Create a network."""
     net = Mininet_wifi()
 
-    nusers = 10
+    abrStrategy = sys.argv[1] if len(sys.argv) > 1 else "abrDynamic"
+    nusers = int(sys.argv[2]) if len(sys.argv) > 2 else 5
 
+    pos = sys.argv[3] if len(sys.argv) > 3 else '500.0,1050.0,0.0'
 
     nstations = nusers//2
     
     for i in range(1, nstations + 1):
-        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position='401.0,1050.0,0.0')
+        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos)
 
-#    for i in range(nstations+1, nusers + 1):
-#        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position='1001.0,1050.0,0.0')
+    for i in range(nstations+1, nusers + 1):
+        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos)
 
     info("*** Creating nodes\n")
 
@@ -165,15 +171,13 @@ def topology(args):
     # stations = np.array([sta1, sta2])
     stations = np.array(net.stations)
 #    threading.Thread(target=monitoring, args=(stations,)).start()
-    threading.Thread(target=incoming, args=(stations,)).start()
+    threading.Thread(target=incoming, args=(stations,abrStrategy,)).start()
 
 #    CLI(net)
     monitoring(stations)
 
-
     info("*** Stopping network\n")
     net.stop()
-
 
 
 if __name__ == '__main__':
