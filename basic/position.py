@@ -65,7 +65,7 @@ def SeleniumPlayer(stas: object, abrStrategy: str):
         sleep(val)
         print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
         
-        makeTerm(sta, cmd='python selenium-start.py {} {}'.format(abrStrategy, sta.name))
+        makeTerm(sta, cmd='python run-player-main.py {} {}'.format(abrStrategy, sta.name))
 
 
 def ChromePlayer(stas: object, abrStrategy: str):
