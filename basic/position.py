@@ -58,16 +58,6 @@ def DashPlayer(stas: object):
         makeTerm(sta, cmd='python dash-emulator.py http://143.106.73.17:30001/akamai/bbb_30fps/bbb_30fps.mpd')
 
 
-def SeleniumPlayer(stas: object, abrStrategy: str):
-    sleep(2)
-    for sta in stas:
-        val = next_time(1 / 5.0)
-        sleep(val)
-        print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
-        
-        makeTerm(sta, cmd='python run-player-main.py {} {}'.format(abrStrategy, sta.name))
-
-
 def ChromePlayer(stas: object, abrStrategy: str):
     sleep(2)
     for sta in stas:
@@ -86,8 +76,18 @@ def ChromePlayer(stas: object, abrStrategy: str):
                      'http://143.106.73.50:30002/samples/ericsson/vod-client.html?userid={}&abrStrategy={}'.format(sta.name, abrStrategy))
 
 
-def incoming(stas: object, abrStrategy: str):
-    SeleniumPlayer(stas, abrStrategy)
+def SeleniumPlayer(stas: object, abrStrategy: str, count: str):
+    sleep(2)
+    for sta in stas:
+        val = next_time(1 / 5.0)
+        sleep(val)
+        print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
+        
+        makeTerm(sta, cmd='python run-player-main.py {} {} {}'.format(abrStrategy, sta.name, count))
+        
+        
+def incoming(stas: object, abrStrategy: str, count: str):
+    SeleniumPlayer(stas, abrStrategy, count)
 
 
 def monitoring(stas):
@@ -95,7 +95,7 @@ def monitoring(stas):
     prev_ap = np.array([None for i in enumerate(stas)])
 
     
-    for k in range(330):
+    for k in range(350):
         for i, sta in enumerate(stas):
             connected_ap = sta.wintfs[0].ssid
 
@@ -127,15 +127,18 @@ def topology(args):
     abrStrategy = sys.argv[1] if len(sys.argv) > 1 else "abrDynamic"
     nusers = int(sys.argv[2]) if len(sys.argv) > 2 else 5
 
-    pos = sys.argv[3] if len(sys.argv) > 3 else '500.0,1050.0,0.0'
+    pos1 = sys.argv[3] if len(sys.argv) > 3 else '500.0,1050.0,0.0'
+    pos2 = sys.argv[4] if len(sys.argv) > 3 else '500.0,1050.0,0.0'
+
+    count = sys.argv[5] if len(sys.argv) > 3 else '0'
 
     nstations = nusers//2
     
     for i in range(1, nstations + 1):
-        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos)
+        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos1)
 
     for i in range(nstations+1, nusers + 1):
-        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos)
+        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos1)
 
     info("*** Creating nodes\n")
 
@@ -171,7 +174,7 @@ def topology(args):
     # stations = np.array([sta1, sta2])
     stations = np.array(net.stations)
 #    threading.Thread(target=monitoring, args=(stations,)).start()
-    threading.Thread(target=incoming, args=(stations,abrStrategy,)).start()
+    threading.Thread(target=incoming, args=(stations,abrStrategy, count)).start()
 
 #    CLI(net)
     monitoring(stations)

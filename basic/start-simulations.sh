@@ -25,10 +25,10 @@ else
             for abrStrategy in "abrThroughput" "abrDynamic" "abrBola";
             do
                 # Simulation progress
-                echo "$count $abrStrategy $nusers ${groupOnePosition[$i]} ${groupTwoPosition[$i]}" >> $filename
+                echo "$count $abrStrategy $nusers ${groupOnePosition[$i]} ${groupOnePosition[$i]}" >> $filename
                 
                 # Start Simulation
-                python position.py $abrStrategy $nusers ${groupOnePosition[$i]} ${groupTwoPosition[$i]}
+                python position.py $abrStrategy $nusers ${groupOnePosition[$i]} ${groupOnePosition[$i]} $count
                 
                 # Cleanup
                 mn -c
