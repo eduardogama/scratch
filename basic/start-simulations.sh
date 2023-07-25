@@ -1,6 +1,16 @@
 #!/bin/bash
 
 
+# Function that will get executed when the user presses Ctrl+C
+function handler(){
+    echo "Processing the Ctrl+C"
+    echo "Parameters of experiment "
+}
+
+# Assign the handler function to the SIGINT signal
+trap handler SIGINT
+
+
 if [ $# -lt 1 ]
 then
     echo "Invalid input"
@@ -35,6 +45,9 @@ else
               
                 # Reset caches 
                 curl http://143.106.73.17:30001/reset?capacity=100
+                
+                # Release users connections
+                curl "http://143.106.73.50:30500/releaseServers"
                 
                 sleep 60
                 count=$((count+1))

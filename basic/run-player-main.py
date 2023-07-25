@@ -74,7 +74,7 @@ WebDriverWait(driver, 634).until(WaitLoad())
 
 """Stop web driver"""
 driver.get_screenshot_as_file(
-    "users/{}/{}/screenshot.png".format(count, user)
+    "users/{}-{}-screenshot.png".format(count, user)
 )
 
 driver.quit()
