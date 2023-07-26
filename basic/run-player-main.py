@@ -7,8 +7,8 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
+from selenium.common.exceptions import TimeoutException
 from webdriver_manager.chrome import ChromeDriverManager
-
 
 
 """
@@ -41,21 +41,20 @@ class WaitLoad:
 
 """Start web driver"""
 chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--verbose')
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
-chrome_options.add_argument('--verbose')
 chrome_options.add_argument('--enable-logging')
 chrome_options.add_argument('--disk-cache-dir=/dev/null')
 chrome_options.add_argument("--no-user-gesture-required")
 chrome_options.add_argument('--user-data-dir=users/' + count + '/' + user)
 
-caps = DesiredCapabilities.CHROME
-caps['goog:loggingPrefs'] = {'browser': 'INFO'}
+
+service = Service() # Service(ChromeDriverManager().install())
 
 driver = webdriver.Chrome(
     options=chrome_options,
-    desired_capabilities=caps,
-    service=Service(ChromeDriverManager().install()),
+    service=service,
 )
 
 """Watching BBB Video Streaming"""
@@ -71,12 +70,14 @@ driver.get(
 #    "sendQoE(player, '{}')".format(user)
 #)
 
-WebDriverWait(driver, 634).until(WaitLoad())
-
+try:
+    WebDriverWait(driver, 634).until(WaitLoad())
+except TimeoutException as e:
+    print("Exception triggered", e)
 
 """Stop web driver"""
 driver.get_screenshot_as_file(
-    "users/{}-{}-screenshot.png".format(count, user)
+    "users/{}/{}-screenshot.png".format(count, user)
 )
 
 driver.quit()
