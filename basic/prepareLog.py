@@ -2,42 +2,44 @@ import os
 import shutil
 
 
-print("Directory name [Default: .browser/]:")
+print("Directory name [Default: users/]:")
 dir_name = str(input())
 
-dir_name = 'users/' if dir_name == "" else dir_name
+dir_name = 'users' if dir_name == "" else dir_name
 
-print("Number of users[Default: 10]:")
-n_users = str(input())
+print("Number of seeds[Default: 10]:")
+seeds = str(input())
 
-n_users = 10 if n_users == "" else int(n_users)
+seeds = 10 if seeds == "" else int(seeds)
 
 
-for u in range(1, n_users+1):
+for s in range(seeds):
+    location = dir_name + '/' + str(s) + '/'
+    users = [ x for x in os.listdir(location) if os.path.isdir(location + x)] 
     
-    location = dir_name + '/user-' + str(u)
-    pathfile = location + '/Default/chrome_debug.log'
     
-    newfile = open(dir_name + '/' + 'user-' + str(u) + '-browser.csv','w')
-    newfile.write('K liveQoE videoQuality videoQualitySwitch StallsDuration bufferLevel\n')
+    for u in users:
+    
+        newfile = open(location + u + '-player.csv','w')
+        newfile.write('K liveQoE videoQuality videoQualitySwitch StallsDuration bufferLevel throughput\n')
 
-    with open(pathfile) as f:
-        lines = f.readlines()
+        pathfile = location + u + '/Default/chrome_debug.log'
         
-        
-        count = 0
-        for line in lines:
-            cells = line.split('"')
-            print(cells)
-            if not "http://143.106.73.50:30002/samples/ericsson/js/main.js" in cells[-1] or cells[1] == "ok":
-                continue
+        with open(pathfile) as f:
+            lines = f.readlines()
             
-            
-            if count < 2:
-                count += 1
-                continue
+            count = 0
+            for line in lines:
+                cells = line.split('"')
+                print(cells)
+                if not "http://143.106.73.50:30002/samples/ericsson/js/main.js" in cells[-1] or cells[1] == "ok":
+                    continue
                 
-            newfile.write(cells[1] + "\n")
+                if count < 2:
+                    count += 1
+                    continue
+                    
+                newfile.write(cells[1] + "\n")
     
     newfile.close()
 

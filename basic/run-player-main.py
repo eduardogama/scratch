@@ -4,6 +4,7 @@ import randomname
 
 from selenium import webdriver
 
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -48,11 +49,12 @@ chrome_options.add_argument('--disk-cache-dir=/dev/null')
 chrome_options.add_argument("--no-user-gesture-required")
 chrome_options.add_argument('--user-data-dir=users/' + count + '/' + user)
 
-#caps = DesiredCapabilities.CHROME
-#caps['goog:loggingPrefs'] = {'browser': 'INFO'}
+caps = DesiredCapabilities.CHROME
+caps['goog:loggingPrefs'] = {'browser': 'INFO'}
 
 driver = webdriver.Chrome(
     options=chrome_options,
+    desired_capabilities=caps,
     service=Service(ChromeDriverManager().install()),
 )
 
