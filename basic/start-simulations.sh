@@ -32,7 +32,8 @@ else
     do
         for i in $(seq 0 $((len-1)));
         do
-            for abrStrategy in "abrThroughput" "abrDynamic" "abrBola";
+#            for abrStrategy in "abrThroughput" "abrDynamic" "abrBola";
+            for abrStrategy in "abrL2A" "abrLoLP";
             do
                 # Simulation progress
                 echo "$count $abrStrategy $nusers ${groupOnePosition[$i]} ${groupOnePosition[$i]}" >> $filename
