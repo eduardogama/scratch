@@ -1,14 +1,14 @@
 #!/bin/bash
 
 
-# Function that will get executed when the user presses Ctrl+C
-function handler(){
-    echo "Processing the Ctrl+C"
-    echo "Parameters of experiment "
-}
+## Function that will get executed when the user presses Ctrl+C
+#function handler(){
+#    echo "Processing the Ctrl+C"
+#    echo "Parameters of experiment "
+#}
 
-# Assign the handler function to the SIGINT signal
-trap handler SIGINT
+## Assign the handler function to the SIGINT signal
+#trap handler SIGINT
 
 
 if [ $# -lt 1 ]
