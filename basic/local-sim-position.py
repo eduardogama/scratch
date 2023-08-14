@@ -70,15 +70,15 @@ def incoming(stas: object, abrStrategy: str, count: str):
 def topology(args):
 
     """Create a network."""
-    net = Mininet_wifi(ifb=True)
+    net = Mininet_wifi(link=wmediumd, wmediumd_mode=interference)
 
     abrStrategy = sys.argv[1] if len(sys.argv) > 1 else "abrDynamic"
     nusers = int(sys.argv[2]) if len(sys.argv) > 2 else 5
 
     pos1 = sys.argv[3] if len(sys.argv) > 3 else '401.0,1050.0,0.0'
-    pos2 = sys.argv[4] if len(sys.argv) > 3 else '401.0,1050.0,0.0'
+    pos2 = sys.argv[4] if len(sys.argv) > 4 else '1001.0,1050.0,0.0'
 
-    count = sys.argv[5] if len(sys.argv) > 3 else '0'
+    count = sys.argv[5] if len(sys.argv) > 5 else '0'
 
     nstations = nusers//2
     
@@ -86,7 +86,7 @@ def topology(args):
         net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos1)
 
     for i in range(nstations+1, nusers + 1):
-        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos1)
+        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos2)
 
     info("*** Creating nodes\n")
 

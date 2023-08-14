@@ -138,7 +138,7 @@ def topology(args):
         net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos1)
 
     for i in range(nstations+1, nusers + 1):
-        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos1)
+        net.addStation('sta%d' % i, mac='00:00:00:00:00:%02d' % i, position=pos2)
 
     info("*** Creating nodes\n")
 
