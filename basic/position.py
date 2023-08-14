@@ -84,8 +84,8 @@ def SeleniumPlayer(stas: object, abrStrategy: str, count: str):
         print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
         
         makeTerm(sta, cmd='python run-player-main.py {} {} {}'.format(abrStrategy, sta.name, count))
-        
-        
+
+
 def incoming(stas: object, abrStrategy: str, count: str):
     SeleniumPlayer(stas, abrStrategy, count)
 
