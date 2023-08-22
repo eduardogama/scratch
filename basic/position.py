@@ -23,9 +23,8 @@ from mininet.term import makeTerm
 
 
 
-#display = Display(visible=0, size=(1024, 768))
-#display = Display()
-#display.start()
+display = Display()
+display.start()
 
 ### Run this code in orchestrator server ###
 #import requests
@@ -122,13 +121,13 @@ def monitoring(stas):
 def topology(args):
 
     """Create a network."""
-    net = Mininet_wifi(ifb=True)
+    net = Mininet_wifi(link=wmediumd, wmediumd_mode=interference)
 
     abrStrategy = sys.argv[1] if len(sys.argv) > 1 else "abrDynamic"
     nusers = int(sys.argv[2]) if len(sys.argv) > 2 else 5
 
     pos1 = sys.argv[3] if len(sys.argv) > 3 else '500.0,1050.0,0.0'
-    pos2 = sys.argv[4] if len(sys.argv) > 3 else '500.0,1050.0,0.0'
+    pos2 = sys.argv[4] if len(sys.argv) > 3 else '1001.0,1050.0,0.0'
 
     count = sys.argv[5] if len(sys.argv) > 3 else '0'
 
@@ -172,12 +171,12 @@ def topology(args):
     e3.start([])
 
     # stations = np.array([sta1, sta2])
-    stations = np.array(net.stations)
+#    stations = np.array(net.stations)
 #    threading.Thread(target=monitoring, args=(stations,)).start()
-    threading.Thread(target=incoming, args=(stations,abrStrategy, count)).start()
+#    threading.Thread(target=incoming, args=(stations,abrStrategy, count)).start()
 
-#    CLI(net)
-    monitoring(stations)
+    CLI(net)
+#    monitoring(stations)
 
     info("*** Stopping network\n")
     net.stop()
@@ -188,4 +187,4 @@ if __name__ == '__main__':
     topology(sys.argv)
 
 
-#display.stop()
+display.stop()
