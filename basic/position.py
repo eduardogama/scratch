@@ -72,7 +72,7 @@ def ChromePlayer(stas: object, abrStrategy: str):
                      '--no-sandbox '
                      '--incognito '
                      '--new-window '
-                     'http://143.106.73.50:30002/samples/ericsson/vod-client.html?userid={}&abrStrategy={}'.format(sta.name, abrStrategy))
+                     'http://143.106.73.50:30002/samples/ericsson/vod-client.html?uid={}&abr={}'.format(sta.name, abrStrategy))
 
 
 def SeleniumPlayer(stas: object, abrStrategy: str, count: str):
@@ -102,7 +102,7 @@ def monitoring(stas):
                 print(
                     json.dumps({
                         "userName": sta.name, 
-                        "bsName": connected_ap, 
+                        "bsName": connected_ap,
                         "ip": sta.wintfs[0].ip
                     })
                 )
@@ -123,7 +123,7 @@ def topology(args):
     """Create a network."""
     net = Mininet_wifi(link=wmediumd, wmediumd_mode=interference)
 
-    abrStrategy = sys.argv[1] if len(sys.argv) > 1 else "abrDynamic"
+    abrstr = sys.argv[1] if len(sys.argv) > 1 else "abrDynamic"
     nusers = int(sys.argv[2]) if len(sys.argv) > 2 else 5
 
     pos1 = sys.argv[3] if len(sys.argv) > 3 else '500.0,1050.0,0.0'
@@ -171,12 +171,12 @@ def topology(args):
     e3.start([])
 
     # stations = np.array([sta1, sta2])
-#    stations = np.array(net.stations)
+    stations = np.array(net.stations)
 #    threading.Thread(target=monitoring, args=(stations,)).start()
-#    threading.Thread(target=incoming, args=(stations,abrStrategy, count)).start()
+    threading.Thread(target=incoming, args=(stations, abrstr, count)).start()
 
-    CLI(net)
-#    monitoring(stations)
+#    CLI(net)
+    monitoring(stations)
 
     info("*** Stopping network\n")
     net.stop()

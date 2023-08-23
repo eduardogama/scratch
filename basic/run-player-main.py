@@ -15,7 +15,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 A simple selenium test example written by python
 """
 
-abrStrategy = sys.argv[1] if len(sys.argv) > 1 else "abrDynamic"
+abrstr = sys.argv[1] if len(sys.argv) > 1 else "abrDynamic"
 user = sys.argv[2] if len(sys.argv) > 2 else randomname.get_name()
 
 count = sys.argv[3] if len(sys.argv) > 3 else '0'
@@ -59,8 +59,10 @@ driver = webdriver.Chrome(
 
 """Watching BBB Video Streaming"""
 driver.get(
-    "http://143.106.73.50:30002/samples/ericsson/vod-client.html?abrStrategy={}&userid={}".format(abrStrategy, user)
+    f'http://143.106.7.163/~eduardogama/player/vod-client.html?abr={abrstr}&uid={user}'
 )
+
+#driver.get(f'http://143.106.73.50:30002/samples/ericsson/vod-client.html?abr={abrstr}&uid={user}')
 
 #driver.execute_script(
 #    "init('{}')".format(user)
