@@ -27,32 +27,32 @@ else
     
     
     count=0
-
+    i=0
+    
     for k in $(seq 1 5);
     do
-        for i in $(seq 0 $((len-1)));
+        for abrStrategy in "abrDynamic";
         do
-#            for abrStrategy in "abrThroughput" "abrDynamic" "abrBola";
-            for abrStrategy in "abrDynamic" "abrThroughput" "abrBola" "abrL2A" "abrLoLP";
-            do
-                # Simulation progress
-                echo "$count $abrStrategy $nusers ${groupOnePosition[$i]} ${groupOnePosition[$i]}" >> $filename
-                
-                # Start Simulation
-                python position.py $abrStrategy $nusers ${groupOnePosition[$i]} ${groupOnePosition[$i]} $count
-                
-                # Cleanup
-                mn -c
-              
-                # Reset caches 
-                curl http://143.106.73.17:30001/reset?capacity=100
-                
-                # Release users connections
-                curl "http://143.106.73.50:30500/releaseServers"
-                
-                sleep 90
-                count=$((count+1))
-            done
+            # Simulation progress
+            echo "$count $abrStrategy $nusers ${groupOnePosition[$i]} ${groupTwoPosition[$i]}" >> $filename
+            
+            # Download Chrome
+            python download-chrome.py
+            
+            # Start Simulation
+            python position.py $abrStrategy $nusers ${groupOnePosition[$i]} ${groupTwoPosition[$i]} $count
+            
+            # Cleanup
+            mn -c
+          
+            # Reset caches 
+            curl http://143.106.73.17:30001/reset?capacity=100
+            
+            # Release users connections
+            curl "http://143.106.73.50:30500/releaseServers"
+            
+            sleep 90
+            count=$((count+1))
         done
     done
 fi
