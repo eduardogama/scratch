@@ -40,7 +40,7 @@ else
             python download-chrome.py
             
             # Start Simulation
-            python position.py $abrStrategy $nusers ${groupOnePosition[$i]} ${groupTwoPosition[$i]} $count
+            python position_20u.py $abrStrategy $nusers ${groupOnePosition[$i]} ${groupTwoPosition[$i]} $count
             
             # Cleanup
             mn -c

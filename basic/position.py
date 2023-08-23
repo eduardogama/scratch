@@ -45,36 +45,6 @@ def next_time(rateParameter: float, RAND_MAX: int = 0):
     return -math.log(1.0 - random.random() / (RAND_MAX + 1)) / rateParameter
 
 
-def DashPlayer(stas: object):
-
-    sleep(5)
-    for sta in stas:
-        val = next_time(1 / 5.0)
-        sleep(val)
-        print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
-        
-#        sta.cmd('python dash-emulator.py http://143.106.73.17:30001/akamai/bbb_30fps/bbb_30fps.mpd')
-        makeTerm(sta, cmd='python dash-emulator.py http://143.106.73.17:30001/akamai/bbb_30fps/bbb_30fps.mpd')
-
-
-def ChromePlayer(stas: object, abrStrategy: str):
-    sleep(2)
-    for sta in stas:
-        val = next_time(1 / 5.0)
-        sleep(val)
-        print(sta.wintfs[0].ip, "starting video ... ", sta.wintfs[0].ssid)
-        makeTerm(
-            sta, cmd='google-chrome '
-                     '--headless '
-#                     '--disable-application-cache '
-#                     '--media-cache-size=1 '
-                     '--disk-cache-dir=/dev/null '
-                     '--no-sandbox '
-                     '--incognito '
-                     '--new-window '
-                     'http://143.106.73.50:30002/samples/ericsson/vod-client.html?uid={}&abr={}'.format(sta.name, abrStrategy))
-
-
 def SeleniumPlayer(stas: object, abrStrategy: str, count: str):
     sleep(2)
     for sta in stas:

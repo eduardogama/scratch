@@ -50,7 +50,7 @@ def monitoring(stas):
     prev_ap = np.array([None for i in enumerate(stas)])
 
     
-    for k in range(350):
+    for k in range(370):
         for i, sta in enumerate(stas):
             connected_ap = sta.wintfs[0].ssid
 
