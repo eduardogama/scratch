@@ -62,15 +62,6 @@ driver.get(
     f'http://143.106.7.163/~eduardogama/player/vod-client.html?abr={abrstr}&uid={user}'
 )
 
-#driver.get(f'http://143.106.73.50:30002/samples/ericsson/vod-client.html?abr={abrstr}&uid={user}')
-
-#driver.execute_script(
-#    "init('{}')".format(user)
-#)
-
-#driver.execute_script(
-#    "sendQoE(player, '{}')".format(user)
-#)
 
 try:
     WebDriverWait(driver, 634).until(WaitLoad())
