@@ -74,7 +74,8 @@ def monitoring(stas):
         sleep(2)
 
 
-def topology(args):
+
+        def topology(args):
 
     """Create a network."""
     net = Mininet_wifi(link=wmediumd, wmediumd_mode=interference)
